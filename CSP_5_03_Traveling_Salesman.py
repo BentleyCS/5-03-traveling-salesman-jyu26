@@ -8,6 +8,12 @@ def getPathDistance(places : list):
     #Given a list of x,y coordinates return the distance it would take to go to each coordinate
     # in order and then back to the start.
     dist = 0
+
+    for i in range (0, len(places)-1):
+        dist += getDistance(places[i], places[i+1])
+
+    dist += getDistance(places[0], places[len(places)-1])
+
     return dist
 
 
@@ -16,22 +22,55 @@ def full_TSP(places : list):
     #and return the path with the shotest distance
     #Print out the number of distance calculations you had to do.
 
-    bestRoute = []
-    calculations = 0
+    permutations = generatePermutations(places)
+    calculations= len(permutations)
+
+    shortestDist= getPathDistance(permutations[0])
+    bestRoute= permutations[0]
+
+    for i in range (1, len(permutations)):
+        dist = getPathDistance(permutations[i])
+        if dist < shortestDist:
+            shortestDist = dist
+            bestRoute = permutations[i]
 
     print(f"there were {calculations} calculations for full TSP")
     return bestRoute
+
+def getClosestNodeIndex(places: list, node):
+
+
+    minDist = getDistance(places[0], node)
+    minIndex = 0
+
+    for i in range (1, len(places)):
+        dist = getDistance(places[i], node)
+        if dist < minDist:
+            minDist = dist
+            minIndex = i
+
+    return minIndex
 
 def hueristic_TSP(places : list):
     #Perform a hueristic calculation for traveling salesman.
     #For each node find the closest node to it and assume it is next node then repeat until you have your path.
     #Return the path. andprint out the number of distance calculations you did.
 
-
     calculations = 0
+    bestRoute = []
+    remainingPlaces = places.copy()
+
+    node = remainingPlaces.pop(0)
+    bestRoute.append(node)
+
+    for i in range (0, len(places)-1):
+        calculations += 1
+        closestIndex = getClosestNodeIndex(remainingPlaces, bestRoute[i])
+        closestNode = remainingPlaces.pop(closestIndex)
+        bestRoute.append(closestNode)
 
     print(f"there were {calculations} calculations for hueristic TSP")
-    return []
+    return bestRoute
 
 def generatePermutations(places : list):
     # a function that given a list will return all possible permutations of the list.
